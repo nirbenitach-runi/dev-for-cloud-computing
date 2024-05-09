@@ -1,9 +1,9 @@
-**Project: Parking Lot Management System**
+## Exercise #1: Parking Lot Management System
 
 ### Overview:
 This project aims to develop a scalable and efficient parking lot management system using AWS services like Lambda, DynamoDB and API Gateway. The system provides functionalities for vehicle entry and exit tracking, along with calculating parking charges based on parked duration.
 
-### Components:
+## Components:
 1. **Terraform Configuration (`parking_lot_infra.tf`):**
    - Defines AWS provider and necessary resources like DynamoDB table, Lambda functions, IAM roles and API Gateway.
 
@@ -23,7 +23,7 @@ This project aims to develop a scalable and efficient parking lot management sys
    - `requirements.txt`: Lists the required Python dependencies.
    - `README.md`: Documentation for the project.
 
-### Instructions:
+## Instructions:
 1. **Building and Running:**
    - Execute `build_and_run.sh` to build the Docker container and start an interactive session.
 
@@ -31,16 +31,14 @@ This project aims to develop a scalable and efficient parking lot management sys
    - Inside the Docker session, run `deploy.sh` to initialize Terraform and apply infrastructure changes.
    - Make sure to configure AWS CLI credentials in `~/.aws` directory before deploying.
    - **Important notes:**
-    - Ensure AWS CLI credentials are properly configured with the required permissions.
-    - Customize the AWS region in `parking_lot_infra.tf` according to your environment or specify your profile in the `deploy.sh` script. 
+        - Ensure AWS CLI credentials are properly configured with the required permissions.
+        - Customize the AWS region in `parking_lot_infra.tf` according to your environment or specify your profile in the `deploy.sh` script. 
 
 3. **Usage:**
    - After deployment, the API Gateway URL will be provided as an output.
    - Use this URL to send POST requests for vehicle entry (`/entry`) and exit (`/exit`) with required parameters.
    - Entry Lambda function stores entry details, while Exit Lambda calculates charges and updates records.
 
-### Author:
+## Author:
 Nir Ben Itach, 3rd Year Computer Science & Entrepreneurship Student
-
-### Contact:
 nir.benitach@post.runi.ac.il
