@@ -6,8 +6,21 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('ParkingLotTable')
 
 def lambda_handler(event, context):
-    ticket_id = event['queryStringParameters']['ticketId']
-    entry = get_entry(ticket_id)
+    try:
+        ticket_id = event['queryStringParameters']['ticketId']
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': f'Something went wrong with your request: {repr(e)}'})
+        } 
+
+    try:
+        entry = get_entry(ticket_id)
+    except Exception as e:
+        return {
+            'statusCode': 404,
+            'body': json.dumps({'message': f'Unable to access {ticket_id}, something went wrong: {repr(e)}'})
+        } 
     
     if entry:
         entry_time = datetime.strptime(entry['entry_time'], "%Y-%m-%d %H:%M:%S")
@@ -40,4 +53,4 @@ def get_entry(ticket_id):
 def calculate_charge(total_hours):
     total_charge = total_hours * 10
     total_charge += 10 * ((total_hours * 60) % 15 > 0)
-    return total_charge
+    return "${:.2f}".format(total_charge)

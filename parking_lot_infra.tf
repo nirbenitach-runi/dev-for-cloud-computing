@@ -21,15 +21,9 @@ resource "aws_dynamodb_table" "parking_lot_table" {
   name           = "ParkingLotTable"
   billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "ticket_id"
-  range_key      = "entry_time"
 
   attribute {
     name = "ticket_id"
-    type = "S"
-  }
-
-  attribute {
-    name = "entry_time"
     type = "S"
   }
 }
@@ -47,6 +41,36 @@ resource "aws_iam_role" "lambda_role" {
       Action    = "sts:AssumeRole"
     }]
   })
+}
+
+# IAM Policy for DynamoDB access
+resource "aws_iam_policy" "dynamodb_policy" {
+  name        = "lambda_dynamodb_policy"
+  description = "IAM policy for Lambda functions to access DynamoDB"
+  
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Query",
+          "dynamodb:Scan"
+        ],
+        Resource = aws_dynamodb_table.parking_lot_table.arn
+      }
+    ]
+  })
+}
+
+# IAM Policy Attachment
+resource "aws_iam_role_policy_attachment" "dynamodb_policy_attachment" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.dynamodb_policy.arn
 }
 
 # Lambda Function - Entry

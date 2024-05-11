@@ -7,8 +7,15 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('ParkingLotTable')
 
 def lambda_handler(event, context):
-    plate = event['queryStringParameters']['plate']
-    parking_lot = event['queryStringParameters']['parkingLot']
+    try:
+        plate = event['queryStringParameters']['plate']
+        parking_lot = event['queryStringParameters']['parkingLot']
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': f'Something went wrong with your request: {repr(e)}'})
+        } 
+
     entry_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     ticket_id = str(uuid4())
     
