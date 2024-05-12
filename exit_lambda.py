@@ -19,7 +19,7 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 404,
-            'body': json.dumps({'message': f'Unable to access {ticket_id}, something went wrong: {repr(e)}'})
+            'body': json.dumps({'message': f'Unable to access ticket ID: {ticket_id}, something went wrong: {repr(e)}'})
         } 
     
     if entry:
@@ -46,11 +46,11 @@ def lambda_handler(event, context):
             'body': json.dumps({'message': 'Entry not found for the provided ticket ID'})
         }
 
-def get_entry(ticket_id):
+def get_entry(ticket_id: str) -> dict:
     response = table.get_item(Key={'ticket_id': ticket_id})
     return response.get('Item')
 
-def calculate_charge(total_hours):
+def calculate_charge(total_hours: float) -> str:
     total_charge = total_hours * 10
     total_charge += 10 * ((total_hours * 60) % 15 > 0)
     return "${:.2f}".format(total_charge)
