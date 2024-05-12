@@ -121,6 +121,26 @@ resource "aws_lambda_function" "exit_lambda" {
   }
 }
 
+resource "aws_lambda_permission" "parking_lot_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeParkingLotEntry"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.entry_lambda[0].function_name  # Assuming count.index = 0 for entry lambda
+  principal     = "apigateway.amazonaws.com"
+
+  # Grant permission for all resources within the API Gateway
+  source_arn = "${aws_api_gateway_rest_api.parking_lot_api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "parking_lot_lambda_permission_exit" {
+  statement_id  = "AllowAPIGatewayInvokeParkingLotExit"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.exit_lambda[0].function_name  # Assuming count.index = 0 for exit lambda
+  principal     = "apigateway.amazonaws.com"
+
+  # Grant permission for all resources within the API Gateway
+  source_arn = "${aws_api_gateway_rest_api.parking_lot_api.execution_arn}/*/*"
+}
+
 # API Gateway
 resource "aws_api_gateway_rest_api" "parking_lot_api" {
   name = "ParkingLotAPI"
@@ -176,7 +196,9 @@ resource "aws_api_gateway_deployment" "parking_lot_deployment" {
   rest_api_id = aws_api_gateway_rest_api.parking_lot_api.id
   depends_on  = [
     aws_api_gateway_integration.parking_lot_integration,
-    aws_api_gateway_integration.parking_lot_integration_exit
+    aws_api_gateway_integration.parking_lot_integration_exit,
+    aws_lambda_permission.parking_lot_lambda_permission,
+    aws_lambda_permission.parking_lot_lambda_permission_exit
   ]
   stage_name  = "production"
 }
