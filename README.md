@@ -32,7 +32,8 @@ This project aims to develop a scalable and efficient parking lot management sys
    - Make sure to configure AWS CLI credentials in `~/.aws` directory before deploying.
    - **Important notes:**
         - Ensure AWS CLI credentials are properly configured with the required permissions.
-        - Customize the AWS region in `parking_lot_infra.tf` according to your environment or specify your profile in the `deploy.sh` script. 
+        - Specify your profile in the `deploy.sh` script for deployment.
+        - Customize the AWS region in `parking_lot_infra.tf` to match your environment.
 
 3. **Usage:**
    - After deployment, the API Gateway URL will be provided as an output.
