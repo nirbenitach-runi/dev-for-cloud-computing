@@ -1,3 +1,4 @@
+import math
 import json
 import boto3
 from datetime import datetime
@@ -54,5 +55,5 @@ def get_entry(ticket_id: str) -> dict:
 
 def calculate_charge(total_minutes: float, price_per_hour: float = 10.0, time_increment_in_minutes: float = 15.0) -> str:
     """ Calculate parking charge based on parking duration and predefined rates. """
-    total_charge = (total_minutes // time_increment_in_minutes) * (price_per_hour / (60 / time_increment_in_minutes))
+    total_charge = math.ceil(total_minutes / time_increment_in_minutes) * (price_per_hour / (60 / time_increment_in_minutes))
     return "${:.2f}".format(total_charge)
