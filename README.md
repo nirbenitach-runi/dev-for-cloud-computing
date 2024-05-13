@@ -40,5 +40,5 @@ This project aims to develop a scalable and efficient parking lot management sys
    - Entry Lambda function stores entry details, while Exit Lambda calculates charges and updates records.
 
 ## Author:
-Nir Ben Itach, 3rd Year Computer Science & Entrepreneurship Student
+Nir Ben Itach, 3rd Year Computer Science & Entrepreneurship Student  
 nir.benitach@post.runi.ac.il
