@@ -1,4 +1,4 @@
 #!/bin/bash
 
 terraform init
-AWS_PROFILE="runi" terraform apply -auto-approve
+AWS_PROFILE="your-aws-profile" terraform apply -auto-approve

@@ -7,6 +7,7 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('ParkingLotTable')
 
 def lambda_handler(event, context):
+    """ Lambda function entry point. Handles incoming requests to register parking lot entries. """
     try:
         plate = event['queryStringParameters']['plate']
         parking_lot = event['queryStringParameters']['parkingLot']
