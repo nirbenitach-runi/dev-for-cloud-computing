@@ -11,7 +11,7 @@ COPY . /terraform
 WORKDIR /terraform
 
 RUN pip3 install -r requirements.txt
-RUN zip -r entry_lambda.zip entry_lambda.py /usr/lib/python3.*/site-packages/*
-RUN zip -r exit_lambda.zip exit_lambda.py /usr/lib/python3.*/site-packages/*
+RUN zip -r entry_lambda.zip src/entry_lambda.py /usr/lib/python3.*/site-packages/*
+RUN zip -r exit_lambda.zip src/exit_lambda.py /usr/lib/python3.*/site-packages/*
 
 ENTRYPOINT [ "/bin/bash" ]
