@@ -1,7 +1,6 @@
 import boto3
 import uuid
 import time
-from boto3.dynamodb.conditions import Key
 
 dynamodb = boto3.resource('dynamodb')
 users_table = dynamodb.Table('Users')
