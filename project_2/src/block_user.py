@@ -5,6 +5,7 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('Users')
 
 def lambda_handler(event, context):
+    event = json.loads(event["body"])
     user_id = event['user_id']
     block_user_id = event['block_user_id']
     

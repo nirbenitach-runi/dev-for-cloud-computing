@@ -8,6 +8,7 @@ users_table = dynamodb.Table('Users')
 messages_table = dynamodb.Table('Messages')
 
 def lambda_handler(event, context):
+    event = json.loads(event["body"])
     sender_id = event['sender_id']
     receiver_id = event['receiver_id']
     message = event['message']

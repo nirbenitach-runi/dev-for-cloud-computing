@@ -7,6 +7,7 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('Messages')
 
 def lambda_handler(event, context):
+    event = json.loads(event["body"])
     user_id = event['user_id']
     
     response = table.query(

@@ -18,7 +18,7 @@ RUN wget https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_am
     rm terraform_1.0.0_linux_amd64.zip
 
 RUN pip3 install awscli --upgrade --user
-RUN pip3 install pytest requests
+RUN pip3 install pytest requests ipdb
 
 WORKDIR /terraform
 COPY . /terraform
@@ -36,5 +36,7 @@ RUN cd /terraform && \
     zip -r check_messages.zip check_messages.py /usr/lib/python3.*/site-packages/*
 
 RUN rm -r src *.py
+COPY tests/ .
+RUN rm -r tests
 
 ENTRYPOINT [ "/bin/bash" ]

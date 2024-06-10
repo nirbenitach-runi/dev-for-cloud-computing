@@ -5,6 +5,7 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('Groups')
 
 def lambda_handler(event, context):
+    event = json.loads(event["body"])
     group_id = event['group_id']
     user_id = event['user_id']
     action = event['action']  # 'add' or 'remove'
