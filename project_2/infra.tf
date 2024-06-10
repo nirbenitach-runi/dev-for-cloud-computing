@@ -30,9 +30,15 @@ resource "aws_dynamodb_table" "messages_table" {
   name           = "Messages"
   billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "message_id"
+  range_key 	 = "receiver_id"
 
   attribute {
     name = "message_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "receiver_id"
     type = "S"
   }
 
@@ -56,6 +62,12 @@ resource "aws_iam_role" "lambda_role" {
       Action    = "sts:AssumeRole"
     }]
   })
+}
+
+# Attach a managed policy granting DynamoDB permissions
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_policy_attachment" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"  # Adjust the policy ARN based on your requirements
 }
 
 # IAM Policy for DynamoDB access
@@ -161,6 +173,71 @@ resource "aws_lambda_function" "check_messages_lambda" {
   runtime       = "python3.8"
   source_code_hash = filebase64sha256("check_messages.zip")
   role          = aws_iam_role.lambda_role.arn
+}
+
+# Lambda Permissions
+
+# Register User Lambda Permission
+resource "aws_lambda_permission" "register_user_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeRegisterUser"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.register_user_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
+}
+
+# Block User Lambda Permission
+resource "aws_lambda_permission" "block_user_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeBlockUser"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.block_user_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
+}
+
+# Create Group Lambda Permission
+resource "aws_lambda_permission" "create_group_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeCreateGroup"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.create_group_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
+}
+
+# Add/Remove Users Lambda Permission
+resource "aws_lambda_permission" "add_remove_users_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeAddRemoveUsers"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.add_remove_users_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
+}
+
+# Send Group Message Lambda Permission
+resource "aws_lambda_permission" "send_group_message_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeSendGroupMessage"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.send_group_message_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
+}
+
+# Send Message Lambda Permission
+resource "aws_lambda_permission" "send_message_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeSendMessage"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.send_message_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
+}
+
+# Check Messages Lambda Permission
+resource "aws_lambda_permission" "check_messages_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeCheckMessages"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.check_messages_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
 }
 
 # API Gateway
@@ -326,15 +403,27 @@ resource "aws_api_gateway_integration" "check_messages_integration" {
   uri                     = aws_lambda_function.check_messages_lambda.invoke_arn
 }
 
-
 # API Gateway Deployments
 resource "aws_api_gateway_deployment" "my_api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.my_api.id
-  depends_on  = [
-    aws_api_gateway_integration.register_user_integration,
-    # Add other dependencies as needed
+  stage_name  = "prod"
+
+  depends_on = [
+    aws_lambda_permission.register_user_lambda_permission,
+    aws_lambda_permission.block_user_lambda_permission,
+    aws_lambda_permission.create_group_lambda_permission,
+    aws_lambda_permission.add_remove_users_lambda_permission,
+    aws_lambda_permission.send_group_message_lambda_permission,
+    aws_lambda_permission.send_message_lambda_permission,
+    aws_lambda_permission.check_messages_lambda_permission,
+    aws_api_gateway_method.register_user_method,
+    aws_api_gateway_method.block_user_method,
+    aws_api_gateway_method.create_group_method,
+    aws_api_gateway_method.add_remove_users_method,
+    aws_api_gateway_method.send_group_message_method,
+    aws_api_gateway_method.send_message_method,
+    aws_api_gateway_method.check_messages_method
   ]
-  stage_name  = "production"
 }
 
 # Output API Gateway URL

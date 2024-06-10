@@ -1,3 +1,4 @@
+import json
 import boto3
 import uuid
 import time
@@ -12,17 +13,15 @@ def lambda_handler(event, context):
     group_id = event['group_id']
     message = event['message']
     
-    # Check if sender is part of the group
     response = groups_table.get_item(Key={'group_id': group_id})
     if 'Item' in response and sender_id in response['Item'].get('members', []):
         members = response['Item']['members']
         timestamp = int(time.time())
         
         for member_id in members:
-            # Check if sender is blocked by the member
             user_response = users_table.get_item(Key={'user_id': member_id})
             if 'Item' in user_response and sender_id in user_response['Item'].get('blocked_users', []):
-                continue  # Skip this member if the sender is blocked
+                continue 
             
             message_id = str(uuid.uuid4())
             message_info = {
@@ -35,6 +34,12 @@ def lambda_handler(event, context):
             }
             messages_table.put_item(Item=message_info)
         
-        return {'statusCode': 200, 'body': 'Message sent to group members'}
+        return {
+            'statusCode': 200,
+            'body': json.dumps({'message': f'Message sent to {group_id}.'})
+        }
     
-    return {'statusCode': 403, 'body': 'Sender is not a member of the group'}
+    return {
+        'statusCode': 403,
+        'body': json.dumps({'message': f'You are not a member of {group_id}.'})
+    }

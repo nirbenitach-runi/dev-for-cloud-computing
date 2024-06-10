@@ -1,3 +1,4 @@
+import json
 import boto3
 import uuid
 
@@ -5,11 +6,13 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('Groups')
 
 def lambda_handler(event, context):
-    group_id = str(uuid.uuid4())
+    group_id = f"group-{str(uuid.uuid4())[:4]}"
     group_info = {
         'group_id': group_id,
-        'group_name': event['group_name'],
-        'members': event.get('members', [])
+        'members': event.get('members').replace(' ', '').split(',')
     }
     table.put_item(Item=group_info)
-    return {'statusCode': 200, 'body': {'group_id': group_id}}
+    return {
+        'statusCode': 200,
+        'body': json.dumps({'group_id': group_id})
+    }

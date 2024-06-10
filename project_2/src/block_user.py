@@ -1,3 +1,4 @@
+import json
 import boto3
 
 dynamodb = boto3.resource('dynamodb')
@@ -17,6 +18,12 @@ def lambda_handler(event, context):
                 UpdateExpression='SET blocked_users = :blocked_users',
                 ExpressionAttributeValues={':blocked_users': blocked_users}
             )
-            return {'statusCode': 200, 'body': 'User blocked'}
+            return {
+                'statusCode': 200,
+                'body': json.dumps({'message': f'You have blocked {block_user_id}.'})
+            }
     
-    return {'statusCode': 400, 'body': 'User not found'}
+    return {
+        'statusCode': 400,
+        'body': json.dumps({'message': f'{block_user_id} not found.'})
+    }
