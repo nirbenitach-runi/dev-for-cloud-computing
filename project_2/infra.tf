@@ -242,8 +242,8 @@ resource "aws_lambda_permission" "check_messages_lambda_permission" {
 
 # API Gateway
 resource "aws_api_gateway_rest_api" "my_api" {
-  name        = "MyAPI"
-  description = "API Gateway for my application"
+  name        = "MessagingSystemAPI"
+  description = "API Gateway for the messaging system"
 }
 
 resource "aws_api_gateway_resource" "register_user_resource" {
