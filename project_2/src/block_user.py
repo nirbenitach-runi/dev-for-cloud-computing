@@ -7,10 +7,19 @@ table = dynamodb.Table('Users')
 def lambda_handler(event, context):
     event = json.loads(event["body"])
     user_id = event['user_id']
+    password = event['password']
     block_user_id = event['block_user_id']
     
     response = table.get_item(Key={'user_id': user_id})
     if 'Item' in response:
+        stored_password = response['Item'].get('password')
+        
+        if stored_password != password:
+            return {
+                'statusCode': 403,
+                'body': json.dumps({'error': 'Unauthorized access'})
+            }
+
         blocked_users = response['Item'].get('blocked_users', [])
         if block_user_id not in blocked_users:
             blocked_users.append(block_user_id)

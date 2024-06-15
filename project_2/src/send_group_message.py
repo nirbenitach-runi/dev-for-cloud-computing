@@ -11,12 +11,27 @@ messages_table = dynamodb.Table('Messages')
 def lambda_handler(event, context):
     event = json.loads(event["body"])
     sender_id = event['sender_id']
+    password = event['password']
     group_id = event['group_id']
     message = event['message']
     
-    response = groups_table.get_item(Key={'group_id': group_id})
-    if 'Item' in response and sender_id in response['Item'].get('members', []):
-        members = response['Item']['members']
+    response_sender = users_table.get_item(Key={'user_id': sender_id})
+    if 'Item' not in response_sender:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': 'Sender ID not found.'})
+        }
+    stored_password = response_sender['Item'].get('password')
+    
+    if stored_password != password:
+        return {
+            'statusCode': 403,
+            'body': json.dumps({'message': 'Unauthorized access'})
+        }
+    
+    response_group = groups_table.get_item(Key={'group_id': group_id})
+    if 'Item' in response_group and sender_id in response_group['Item'].get('members', []):
+        members = response_group['Item']['members']
         timestamp = int(time.time())
         
         for member_id in members:
