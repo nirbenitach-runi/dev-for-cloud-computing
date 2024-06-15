@@ -5,8 +5,8 @@
 
 ## Components:
    - **AWS Lambda**: Serverless compute service to run backend functions.
-   - **Amazon API Gateway**: To create, publish, maintain, monitor, and secure the APIs.
-   - **Amazon DynamoDB**: NoSQL database service to store user and message data.
+   - **Amazon API Gateway**: To create, publish, maintain, monitor and secure the APIs.
+   - **Amazon DynamoDB**: NoSQL database service to store data.
    - **Terraform**: Infrastructure as Code tool to manage and provision the infrastructure.
 
 ## Instructions:
